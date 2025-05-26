@@ -39,6 +39,6 @@ admin.html – Admin Dashboard (coming soon)
 bash
 Copy
 Edit
-git clone https://github.com/yourusername/anderson-store.git
+[git clone https://github.com/yourusername/anderson-store.git](https://sujanbas.github.io/Anderson-Convenience-Store/)
 cd anderson-store
 Open index.html in a browser or deploy with GitHub Pages / Netlify.
