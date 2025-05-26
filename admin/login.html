@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Anderson Convenience Store</title>
+
+  <meta name="description" content="Anderson Convenience Store offers gas, groceries, hardware, feed, and everyday essentials in Anderson, AL." />
+
+  <link rel="stylesheet" href="../css/login.css" />
+  <link rel="stylesheet" href="./css/partials.css">
+  <script src="https://kit.fontawesome.com/3b8f9e8c33.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
+
+  <div id="app" class="login-container">
+    <h1>Admin Login</h1>
+    <p class="warning">
+      <i class="fas fa-exclamation-triangle"></i>
+      <strong> Authorized Personnel Only:</strong> This section is strictly for administrative access. Unauthorized access is prohibited and may be subject to legal action.
+    </p>
+    <form @submit.prevent="login">
+      <div class="input-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" v-model="username" required />
+      </div>
+      <div class="input-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" v-model="password" required />
+      </div>
+      <button type="submit">Login</button>
+      <p v-if="error" class="error">{{ error }}</p>
+    </form>
+  </div>
+
+  <script>
+    const { createApp } = Vue;
+    createApp({
+      data() {
+        return {
+          username: '',
+          password: '',
+          error: ''
+        };
+      },
+      methods: {
+        login() {
+          if (this.username === 'admin' && this.password === 'password123') {
+            window.location.href = './dashboard.html';
+          } else {
+            this.error = 'Invalid username or password';
+          }
+        }
+      }
+    }).mount('#app');
+  </script>
+
+</body>
+</html>

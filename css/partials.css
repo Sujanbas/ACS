@@ -1,0 +1,78 @@
+
+/* Header and Navbar */
+.header {
+  background-color: #1e3a8a;
+  color: #fff;
+  padding: 1rem 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1100px;
+  margin: auto;
+  padding: 0 20px;
+  flex-wrap: wrap;
+}
+
+.logo a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
+.links {
+  display: flex;
+  list-style: none;
+  gap: 1.5rem;
+}
+
+.links a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 1rem;
+  transition: color 0.3s ease;
+}
+
+.links a:hover {
+  color: #facc15;
+}
+
+/* Buttons */
+.buttons .order-now-btn,
+.cart {
+  background-color: #facc15;
+  color: #1e3a8a;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  text-decoration: none;
+  margin-left: 20px;
+  transition: background 0.3s ease;
+  position: relative;
+  font-weight: bold;
+}
+
+.buttons .order-now-btn:hover,
+.cart:hover {
+  background-color: #eab308;
+}
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 20px;
+  background-color: #1e3a8a;
+  color: white;
+  font-size: 0.9rem;
+}
+
+.footer a {
+  color: #facc15;
+  text-decoration: none;
+}
+
+.footer a:hover {
+  text-decoration: underline;
+}

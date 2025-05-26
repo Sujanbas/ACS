@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Anderson Convenience Store</title>
+
+  <meta name="description" content="Anderson Convenience Store offers gas, groceries, hardware, feed, and everyday essentials in Anderson, AL." />
+
+  <link rel="stylesheet" href="./css/index.css" />
+  <link rel="stylesheet" href="./css/menu.css"/>
+  <link rel="stylesheet" href="./css/partials.css">
+  <script src="https://kit.fontawesome.com/3b8f9e8c33.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="js/navbar.js" defer></script>
+  <script src="js/footer.js" defer></script>
+</head>
+<body>
+
+  <header class="header">
+    <div id="navbar-placeholder" aria-label="Site Navigation"></div>
+  </header>
+  <div class="container">
+    <h1>Our Menu</h1>
+    <div class="menu-container">
+  
+      <div class="menu-item" data-name="Crispy Chicken Sandwich" data-price="3.99">
+        <div class="price-tag">$3.99</div>
+        <img src="pics/crispy-chicken-sandwich.png" alt="Crispy Chicken Sandwich">
+        <div class="item-name">Crispy Chicken Sandwich</div>
+        <div class="cart">Add to cart</div>
+      </div>
+  
+      <div class="menu-item" data-name="Spicy Chicken Sandwich" data-price="3.99">
+        <div class="price-tag">$3.99</div>
+        <img src="pics/spicy-chicken-sandwich.png" alt="Spicy Chicken Sandwich">
+        <div class="item-name">Spicy Chicken Sandwich</div>
+        <div class="cart">Add to cart</div>
+      </div>
+  
+      <div class="menu-item" data-name="Ham Burger" data-price="5.99">
+        <div class="price-tag">$5.99</div>
+        <img src="images/ham-burger.jpg" alt="Ham Burger">
+        <div class="item-name">Ham Burger</div>
+        <div class="cart">Add to cart</div>
+      </div>
+  
+      <div class="menu-item" data-name="Pizza" data-price="8.99">
+        <div class="price-tag">$8.99</div>
+        <img src="images/pizza.jpg" alt="Pizza">
+        <div class="item-name">Pizza</div>
+        <div class="cart">Add to cart</div>
+      </div>
+  
+      <div class="menu-item" data-name="Cheese Sticks" data-price="3.99">
+        <div class="price-tag">$3.99</div>
+        <img src="images/cheese-sticks.jpg" alt="Cheese Sticks">
+        <div class="item-name">Cheese Sticks</div>
+        <div class="cart">Add to cart</div>
+      </div>
+  
+      <div class="menu-item" data-name="Cheese Potatoes" data-price="2.99">
+        <div class="price-tag">$2.99</div>
+        <img src="images/cheese-potatoes.jpg" alt="Cheese Potatoes">
+        <div class="item-name">Cheese Potatoes</div>
+        <div class="cart">Add to cart</div>
+      </div>
+  
+      <div class="menu-item" data-name="Wedges" data-price="2.49">
+        <div class="price-tag">$2.49</div>
+        <img src="images/wedges.jpg" alt="Wedges">
+        <div class="item-name">Wedges</div>
+        <div class="cart">Add to cart</div>
+      </div>
+  
+      <div class="menu-item" data-name="Fries" data-price="2.99">
+        <div class="price-tag">$2.99</div>
+        <img src="images/fries.jpg" alt="Fries">
+        <div class="item-name">Fries</div>
+        <div class="cart">Add to cart</div>
+      </div>
+  
+      <div class="menu-item" data-name="Corndog" data-price="2.49">
+        <div class="price-tag">$2.49</div>
+        <img src="images/corndog.jpg" alt="Corndog">
+        <div class="item-name">Corndog</div>
+        <div class="cart">Add to cart</div>
+      </div>
+  
+      <div class="menu-item" data-name="Shrimp Basket" data-price="5.99">
+        <div class="price-tag">$5.99</div>
+        <img src="images/shrimp-basket.jpg" alt="Shrimp Basket">
+        <div class="item-name">Shrimp Basket</div>
+        <div class="cart">Add to cart</div>
+      </div>
+  
+      <div class="menu-item" data-name="Chicken Fingers" data-price="5.99">
+        <div class="price-tag">$5.99</div>
+        <img src="images/chicken-fingers.jpg" alt="Chicken Fingers">
+        <div class="item-name">Chicken Fingers</div>
+        <div class="cart">Add to cart</div>
+      </div>
+  
+      <div class="menu-item" data-name="Chicken Bites" data-price="4.99">
+        <div class="price-tag">$4.99</div>
+        <img src="images/chicken-bites.jpg" alt="Chicken Bites">
+        <div class="item-name">Chicken Bites</div>
+        <div class="cart">Add to cart</div>
+      </div>
+  
+      <div class="menu-item" data-name="Chicken Nuggets" data-price="5.49">
+        <div class="price-tag">$5.49</div>
+        <img src="images/chicken-nuggets.jpg" alt="Chicken Nuggets">
+        <div class="item-name">Chicken Nuggets</div>
+        <div class=  "cart">Add to cart</div>
+      </div>
+       
+    </div>
+  </div>
+  <div class="weekend-menu">
+    <h2>Saturday BBQ Specials</h2>
+    <p>We serve smoked Ribs and Chicken every Saturday…</p>
+    <p>Each plate comes with 2 sides: Baked Beans, Potato Salad, or Cole Slaw</p>
+  
+    <div class="menu-grid">
+      <div class="menu-item" data-name="Rack of Ribs" data-price="25.00">
+        <div class="item-name">Rack of Ribs</div>
+        <div class="item-price">$25.00</div>
+        <button class="cart">Add to Cart</button>
+      </div>
+  
+      <div class="menu-item" data-name="1/2 Chicken" data-price="7.99">
+        <div class="item-name">1/2 Chicken</div>
+        <div class="item-price">$7.99</div>
+        <button class="cart">Add to Cart</button>
+      </div>
+  
+      <div class="menu-item" data-name="Ribs Plate" data-price="9.99">
+        <div class="item-name">Ribs Plate</div>
+        <div class="item-price">$9.99</div>
+        <button class="cart">Add to Cart</button>
+      </div>
+  
+      <div class="menu-item" data-name="Chicken Plate" data-price="9.99">
+        <div class="item-name">Chicken Plate</div>
+        <div class="item-price">$9.99</div>
+        <button class="cart">Add to Cart</button>
+      </div>
+    </div>
+  </div>
+  
+  </div>
+  
+       <!-- Footer Placeholder -->
+       <div id="footer-placeholder"></div>
+
+  </body>
+  </html>
+ 
+  

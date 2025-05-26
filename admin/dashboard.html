@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard - Anderson Convenience Store</title>
+
+  <meta name="description" content="Admin Dashboard to manage store operations." />
+  <link rel="stylesheet" href="../css/dashboard.css" />
+  <script src="https://kit.fontawesome.com/3b8f9e8c33.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="../js/feed.js" defer></script>
+   <script src="../js/dashboard.js" defer></script>
+
+ 
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar -->
+    <div id="sidebar">
+      <h2><i class="fas fa-cogs"></i> Admin Panel</h2>
+      <button class="active" data-section="new-order"><i class="fas fa-utensils"></i> New Order</button>
+      <button data-section="feed-price"><i class="fas fa-tractor"></i> Feed Price</button>
+      <button data-section="fuel-price"><i class="fas fa-gas-pump"></i> Fuel Price</button>
+      <button data-section="deli-price"><i class="fas fa-hamburger"></i> Deli Price</button>
+    </div>
+
+    <!-- Dashboard Content -->
+    <div id="dashboard">
+      <div class="dashboard-header">
+        <h1><i class="fas fa-cogs"></i> Admin Dashboard</h1>
+        <p>Manage store operations securely</p>
+      </div>
+
+      <!-- New Order Section -->
+      <div class="dashboard-section active" id="new-order">
+        <h2><i class="fas fa-utensils"></i> New Order</h2>
+        <div class="form-group">
+          <label>Food Order</label>
+          <!-- Insert table from order.html or dynamic content here -->
+        </div>
+        <button>Confirm Order</button>
+      </div>
+
+     
+        <!-- Feed Price Section -->
+          <div class="dashboard-section" id="feed-price">
+              <h2><i class="fas fa-tractor"></i> Change Feed Price</h2>
+              <div class="form-group" style="position: relative;">
+                <label for="productName">Feed Product Name</label>
+                <input type="text" id="productName" placeholder="e.g., Hen Scratch" autocomplete="off" />
+                <div id="suggestions" class="suggestions-box"></div>
+              </div>
+
+              <div class="form-group">
+                <label for="newPrice">New Price</label>
+                <input type="text" id="newPrice" placeholder="$0.00" />
+              </div>
+              <button id="updatePriceBtn">Update Feed Price</button>
+          
+                <h2>Feed Price Chart</h2>
+                <table id="priceTable">
+                  <thead>
+                    <tr>
+                      <th>Category</th>
+                      <th>Quantity</th>
+                      <th>Product</th>
+                      <th>Price</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- Rows will be injected by JavaScript -->
+                  </tbody>
+                </table>
+          </div>
+      
+
+
+      <!-- Fuel Price Section -->
+      <div class="dashboard-section" id="fuel-price">
+
+        <hr style="margin: 30px 0; border: 1px solid #444;" />
+
+        <h2><i class="fas fa-gas-pump"></i> Today's Fuel Prices</h2>
+        <div class="price-grid">
+          <div class="price-card" data-type="Regular">
+            <i class="fas fa-car"></i>
+            <h3>Regular</h3>
+            <p>$2.899</p>
+          </div>
+          <div class="price-card" data-type="Mid-Grade">
+            <i class="fas fa-car-side"></i>
+            <h3>Mid-Grade</h3>
+            <p>$3.399</p>
+          </div>
+          <div class="price-card" data-type="Premium">
+            <i class="fas fa-car-alt"></i>
+            <h3>Premium</h3>
+            <p>$3.899</p>
+          </div>
+          <div class="price-card" data-type="Diesel (Off-Road)">
+            <i class="fas fa-tractor"></i>
+            <h3>Diesel (Off-Road)</h3>
+            <p>$2.899</p>
+          </div>
+          <div class="price-card" data-type="Diesel (On-Road)">
+            <i class="fas fa-truck"></i>
+            <h3>Diesel (On-Road)</h3>
+            <p>$3.399</p>
+          </div>
+        </div>
+
+        <h2><i class="fas fa-gas-pump"></i> Change Fuel Price</h2>
+        <div class="form-group">
+          <label>Fuel Type</label>
+          <input type="text" id="fuelTypeInput" placeholder="e.g., Regular, Diesel (Off-Road)" />
+        </div>
+        <div class="form-group">
+          <label>New Price</label>
+          <input type="text" id="newFuelPriceInput" placeholder="$0.00" />
+        </div>
+        <button id="updateFuelBtn">Update Fuel Price</button>
+
+        <div id="fuelMessage" class="dashboard-message" style="display: none;"></div>
+      </div>
+
+
+      <!-- Deli Price Section -->
+      <div class="dashboard-section" id="deli-price">
+        <h2><i class="fas fa-hamburger"></i> Change Deli Price</h2>
+              
+            <div class="form-group" style="position: relative;">
+              <label>Deli Item</label>
+              <input type="text" id="product-name" placeholder="e.g., Cheese sticks, pizza" autocomplete="off" />
+              <div id="suggestions" class="suggestions-box"></div>
+            </div>
+
+            <div class="form-group">
+              <label>New Price</label>
+              <input type="text" id="new-price" placeholder="$0.00" />
+            </div>
+
+            <button id="update-price-btn">Update Deli Price</button>
+
+      </div>
+    </div>
+  </div>
+</body>
+</html>
