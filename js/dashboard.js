@@ -154,7 +154,7 @@ document.addEventListener("click", e => {
   }
 });
 
-
+/**
 //Deli section Js
     const productInput = document.getElementById("product-name");
   const newPriceInput = document.getElementById("new-price");
@@ -221,3 +221,4 @@ document.addEventListener("click", e => {
       alert("Unable to find price display element.");
     }
   });
+*/
