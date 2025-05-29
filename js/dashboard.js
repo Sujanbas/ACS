@@ -1,5 +1,30 @@
+   import { db, collection, getDoc, getDocs, updateDoc, doc, addDoc, deleteDoc, where, query, signOut, onAuthStateChanged, auth } from "./firebase-config.js";
+   
+   //Check if authorized login
+    const userEmailSpan = document.getElementById("userEmail");
+    onAuthStateChanged(auth, user => {
+  if (!user) {
+    // Not logged in, redirect to login page
+    window.location.href = "login.html";
+  } else {
+    // User is logged in, proceed to show dashboard
+     const emailName = user.email.split('@')[0];
+      userEmailSpan.textContent = emailName;
+    console.log("User is authenticated:", user.email);
+  }
+});
 
-    //Sidebar
+    //logout
+      document.getElementById('logoutBtn').addEventListener('click', () => {
+        signOut(auth).then(() => {
+          // Successfully signed out from Firebase
+          localStorage.removeItem('isAdminLoggedIn'); // clear your local flag
+          window.location.href = 'login.html';        // redirect to login page
+        }).catch((error) => {
+          console.error('Error signing out:', error);
+        });
+      });
+   //Sidebar
     const buttons = document.querySelectorAll('#sidebar button');
     const sections = document.querySelectorAll('.dashboard-section');
 
@@ -18,69 +43,153 @@
       });
     });
 
-   
-    //Fuel Price Js
-document.addEventListener("DOMContentLoaded", () => {
-  const fuelTypeInput = document.getElementById("fuelTypeInput");
-  const newPriceInput = document.getElementById("newFuelPriceInput");
-  const fuelMessage = document.getElementById("fuelMessage");
-  const priceCards = document.querySelectorAll(".price-card");
+    //Food order.js
+    // orders.js
 
-  // Load saved prices on page load
-  const savedPrices = JSON.parse(localStorage.getItem("fuelPrices")) || {};
-  priceCards.forEach(card => {
-    const type = card.getAttribute("data-type");
-    const priceEl = card.querySelector("p");
-    if (savedPrices[type]) {
-      priceEl.textContent = savedPrices[type];
-    }
+const ordersContainer = document.getElementById('ordersContainer');
+
+async function fetchOrders() {
+  ordersContainer.innerHTML = '';
+  const ordersRef = collection(db, 'orders');
+  const snapshot = await getDocs(ordersRef);
+
+  if (snapshot.empty) {
+    ordersContainer.innerHTML = '<p>No orders found.</p>';
+    return;
+  }
+
+  snapshot.forEach(docSnap => {
+    const order = docSnap.data();
+    const orderId = docSnap.id;
+
+    const orderDiv = document.createElement('div');
+    orderDiv.className = 'order';
+
+    let html = `<h3>${order.item || 'Item not specified'}</h3>`;
+    if (order.quantity != null) html += `<p><strong>Quantity:</strong> ${order.quantity}</p>`;
+    if (order.price != null) html += `<p><strong>Price:</strong> $${order.price.toFixed(2)}</p>`;
+    if (order.name) html += `<p><strong>Name:</strong> ${order.name}</p>`;
+    if (order.phone) html += `<p><strong>Phone:</strong> ${order.phone}</p>`;
+    if (order.pizzaSize) html += `<p><strong>Pizza Size:</strong> ${order.pizzaSize}</p>`;
+    if (order.toppings && order.toppings.length > 0) html += `<p><strong>Toppings:</strong> ${order.toppings.join(', ')}</p>`;
+    if (order.request) html += `<p><strong>Request:</strong> ${order.request}</p>`;
+    if (order.createdAt) html += `<p><strong>Created:</strong> ${new Date(order.createdAt).toLocaleString()}</p>`;
+
+    html += `<button data-id="${orderId}">Order Completed</button><br><p>------------------------------------------------</><br>`;
+
+    orderDiv.innerHTML = html;
+    ordersContainer.appendChild(orderDiv);
   });
 
-  // Clicking a card fills in the type
-  priceCards.forEach(card => {
-    card.addEventListener("click", () => {
-      const type = card.getAttribute("data-type");
-      fuelTypeInput.value = type;
+  attachDeleteListeners();
+}
+
+function attachDeleteListeners() {
+  const buttons = document.querySelectorAll('button[data-id]');
+  buttons.forEach(button => {
+    button.addEventListener('click', async () => {
+      const id = button.getAttribute('data-id');
+      if (confirm('Mark this order as completed and remove from database?')) {
+        await deleteDoc(doc(db, 'orders', id));
+        fetchOrders(); // refresh list
+      }
     });
   });
+}
 
-  // Updating price
-  document.getElementById("updateFuelBtn").addEventListener("click", () => {
-    const type = fuelTypeInput.value.trim();
-    const price = newPriceInput.value.trim();
+fetchOrders();
 
-    if (!type || !price) {
-      showFuelMessage("Please enter both fuel type and new price.", true);
-      return;
-    }
+  
+  
+  // js/gas-prices.js
 
-    const card = Array.from(priceCards).find(c => c.getAttribute("data-type") === type);
-    if (card) {
-      const priceEl = card.querySelector("p");
-      priceEl.textContent = price;
 
-      // Save to localStorage
-      savedPrices[type] = price;
-      localStorage.setItem("fuelPrices", JSON.stringify(savedPrices));
+async function loadGasPrices() {
+  const docRef = doc(db, "gasPrices", "current");
+  try {
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      const prices = docSnap.data();
 
-      showFuelMessage(`Price updated for ${type}.`, false);
+      // Map prices to your HTML price cards by data-type attribute
+      const priceCards = document.querySelectorAll(".price-card");
+      priceCards.forEach(card => {
+        const type = card.getAttribute("data-type");
+        let priceText = "";
+
+        switch(type) {
+          case "Regular":
+            priceText = prices.regular ? `$${prices.regular.toFixed(3)}` : "N/A";
+            break;
+          case "Mid-Grade":
+            priceText = prices.midGrade ? `$${prices.midGrade.toFixed(3)}` : "N/A";
+            break;
+          case "Premium":
+            priceText = prices.premium ? `$${prices.premium.toFixed(3)}` : "N/A";
+            break;
+          case "Diesel (Off-Road)":
+            priceText = prices.dieselOffRoad ? `$${prices.dieselOffRoad.toFixed(3)}` : "N/A";
+            break;
+          case "Diesel (On-Road)":
+            priceText = prices.dieselOnRoad ? `$${prices.dieselOnRoad.toFixed(3)}` : "N/A";
+            break;
+          default:
+            priceText = "N/A";
+        }
+
+        // Update price paragraph text
+        const priceElement = card.querySelector("p");
+        if (priceElement) priceElement.textContent = priceText;
+      });
     } else {
-      showFuelMessage("Fuel type not found. Click on a fuel card or check spelling.", true);
+      console.error("No gas price document found!");
     }
-  });
-
-  function showFuelMessage(message, isError) {
-    fuelMessage.textContent = message;
-    fuelMessage.style.display = "block";
-    fuelMessage.style.borderLeftColor = isError ? "#f44336" : "#00bcd4";
-    setTimeout(() => (fuelMessage.style.display = "none"), 3000);
+  } catch (error) {
+    console.error("Error fetching gas prices:", error);
   }
-});
+}
+
+// Run on page load
+window.addEventListener("DOMContentLoaded", loadGasPrices);
+
+   
+   /*/ check if loggedin
+    window.addEventListener("DOMContentLoaded", () => {
+        const loggedIn = localStorage.getItem("isAdminLoggedIn");
+        if (loggedIn !== "true") {
+            window.location.href = ".//admin/login.html"; // redirect if not logged in
+        }
+    });
+
+    //logout
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+        localStorage.removeItem("isAdminLoggedIn");
+        window.location.href = "login.html";
+        });
+*/
 
 //Feed Section Js
 
+const productInput = document.getElementById("productName");
+const priceInput = document.getElementById("newPrice");
+const updatePriceBtn = document.getElementById("updatePriceBtn");
+const suggestionsBox = document.getElementById("suggestions");
+
+let feedData = [];
+
+// Fetch feed data from Firestore on load
+async function fetchFeedData() {
+  const querySnapshot = await getDocs(collection(db, "feedPrices"));
+  feedData = [];
+  querySnapshot.forEach(docSnap => {
+    feedData.push({ id: docSnap.id, ...docSnap.data() });
+  });
+}
+
+fetchFeedData();
+
 // Update price button click handler
-document.getElementById("updatePriceBtn").addEventListener("click", () => {
+updatePriceBtn.addEventListener("click", async () => {
   const productName = productInput.value.trim();
   let newPrice = priceInput.value.trim();
 
@@ -89,33 +198,29 @@ document.getElementById("updatePriceBtn").addEventListener("click", () => {
     return;
   }
 
-  // Validate price format: allow optional $ and 1 or 2 decimals
   if (!/^\$?\d+(\.\d{1,2})?$/.test(newPrice)) {
     alert("Please enter a valid price (e.g., $25 or 25.00).");
     return;
   }
 
-  // Auto-add $ prefix if missing
   if (!newPrice.startsWith("$")) {
     newPrice = "$" + newPrice;
   }
 
-  let productFound = false;
-
-  data = data.map(item => {
-    if (item.product.toLowerCase() === productName.toLowerCase()) {
-      productFound = true;
-      return { ...item, price: newPrice };
-    }
-    return item;
-  });
-
-  if (productFound) {
-    localStorage.setItem("feedData", JSON.stringify(data));
-    renderFeedTable();
-    alert(`Price for "${productName}" updated to ${newPrice}.`);
-  } else {
+  const item = feedData.find(i => i.product.toLowerCase() === productName.toLowerCase());
+  if (!item) {
     alert(`Product "${productName}" not found.`);
+    return;
+  }
+
+  try {
+    const docRef = doc(db, "feedPrices", item.id);
+    await updateDoc(docRef, { price: newPrice });
+    alert(`Price for "${productName}" updated to ${newPrice}.`);
+    await fetchFeedData();
+  } catch (error) {
+    console.error("Error updating price:", error);
+    alert("Failed to update price.");
   }
 
   productInput.value = "";
@@ -130,7 +235,7 @@ productInput.addEventListener("input", () => {
 
   if (query.length === 0) return;
 
-  const matches = data
+  const matches = feedData
     .filter(item => item.product.toLowerCase().includes(query))
     .slice(0, 5);
 
@@ -153,72 +258,202 @@ document.addEventListener("click", e => {
     suggestionsBox.innerHTML = "";
   }
 });
+//Add new feed items
 
-/**
+addFeedForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const category = document.getElementById('newCategory').value.trim();
+  const quantityStr = document.getElementById('newQuantity').value.trim();
+  const product = document.getElementById('newProductName').value.trim();
+  let price = document.getElementById('newProductPrice').value.trim();
+
+  if (!category || !quantityStr || !product || !price) {
+    showAddFeedMessage("Please fill out all fields.", true);
+    return;
+  }
+
+  const quantity = Number(quantityStr);
+  if (isNaN(quantity) || quantity < 0) {
+    showAddFeedMessage("Please enter a valid quantity.", true);
+    return;
+  }
+
+  if (!/^\$?\d+(\.\d{1,2})?$/.test(price)) {
+    showAddFeedMessage("Please enter a valid price (e.g., $25 or 25.00).", true);
+    return;
+  }
+
+  if (!price.startsWith("$")) price = "$" + price;
+
+  const newItem = {
+    category,
+    quantity,
+    product,
+    price,
+    createdAt: new Date().toISOString()
+  };
+
+  try {
+    await addDoc(collection(db, "feedPrices"), newItem);
+    showAddFeedMessage(`Added "${product}" successfully!`, false);
+    addFeedForm.reset();
+    fetchFeedData(); // Refresh local list
+  } catch (error) {
+    console.error("Error adding feed item:", error);
+    showAddFeedMessage("Error adding product.", true);
+  }
+});
+
+//feed delete section:
+
+
+const deleteButton = document.querySelector('#updatePriceBtn + button[type="submit"]');
+
+deleteButton.addEventListener('click', async (e) => {
+  e.preventDefault();
+
+  const productName = document.getElementById('productName').value.trim();
+  if (!productName) {
+    alert("Please enter a product name to delete.");
+    return;
+  }
+
+  try {
+    const feedRef = collection(db, "feedPrices");
+    const q = query(feedRef, where("product", "==", productName));
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+      alert(`No product found with name "${productName}".`);
+      return;
+    }
+
+    let deletedCount = 0;
+    for (const docSnap of querySnapshot.docs) {
+      await deleteDoc(docSnap.ref);
+      deletedCount++;
+    }
+
+    alert(`Deleted ${deletedCount} product(s) named "${productName}".`);
+    document.getElementById('productName').value = '';
+    document.getElementById('newPrice').value = '';
+    fetchFeedData(); // Refresh UI if needed
+  } catch (error) {
+    console.error("Error deleting product:", error);
+    alert("Error deleting product. Check console for details.");
+  }
+});
+
+
+
 //Deli section Js
-    const productInput = document.getElementById("product-name");
-  const newPriceInput = document.getElementById("new-price");
-  const updateButton = document.getElementById("update-price-btn");
-  const suggestionsBox = document.getElementById("suggestions");
+    document.addEventListener('DOMContentLoaded', () => {
+      const menuCol = collection(db, 'menu');
+      const menuTableBody = document.querySelector('#menuTable tbody');
+      const addItemForm = document.getElementById('addItemForm');
+      const categoryOptions = ['Burger','Pizza','Snacks','Weekend Items'];
 
-  // Build product list from existing DOM
-  const products = Array.from(document.querySelectorAll(".menu-item")).map(item => ({
-    name: item.getAttribute("data-name"),
-    element: item
-  }));
+      // Fetch & render menu items
+      async function loadMenu() {
+        menuTableBody.innerHTML = '';
+        const snapshot = await getDocs(menuCol);
+        snapshot.forEach(docSnap => {
+          const data = docSnap.data();
+          const tr = document.createElement('tr');
+          tr.dataset.id = docSnap.id;
+          tr.innerHTML = `
+            <td contenteditable="true" class="edit-name">${data.name}</td>
+            <td contenteditable="true" class="edit-price">${data.price.toFixed(2)}</td>
+            <td>
+              <select class="edit-category">
+                ${categoryOptions.map(cat => `
+                  <option value="${cat}" ${data.category===cat? 'selected':''}>${cat}</option>
+                `).join('')}
+              </select>
+            </td>
+            <td contenteditable="true" class="edit-description">${data.description || ''}</td>
+            <td><input type="checkbox" class="edit-available" ${data.available ? 'checked' : ''}></td>
+            <td>
+              <button class="update-btn" type="button">Save</button>
+              <button class="delete-btn" type="button">Delete</button>
+            </td>
+          `;
+          menuTableBody.appendChild(tr);
+        });
+        attachMenuListeners();
+      }
 
-  // Auto-suggestions when typing
-  productInput.addEventListener("input", () => {
-    const query = productInput.value.toLowerCase().trim();
-    suggestionsBox.innerHTML = "";
-    if (!query) return;
+      // Add new item with duplicate check
+      addItemForm.addEventListener('submit', async e => {
+        e.preventDefault();
+        if (!addItemForm.checkValidity()) {
+          addItemForm.reportValidity();
+          return;
+        }
+        const name = document.getElementById('newName').value.trim();
+        const price = parseFloat(document.getElementById('newPrice').value);
+        const category = document.getElementById('newCategory').value;
+        const description = document.getElementById('newDescription').value.trim();
+        const available = document.getElementById('newAvailable').checked;
 
-    const matches = products
-      .filter(p => p.name.toLowerCase().includes(query))
-      .slice(0, 5);
+        // Check for existing item with same name
+        const q = query(menuCol, where('name', '==', name));
+        const existing = await getDocs(q);
+        if (!existing.empty) {
+          alert(`An item named "${name}" already exists.`);
+          return;
+        }
 
-    matches.forEach(match => {
-      const div = document.createElement("div");
-      div.textContent = match.name;
-      div.addEventListener("click", () => {
-        productInput.value = match.name;
-        suggestionsBox.innerHTML = "";
+        try {
+          await addDoc(menuCol, { name, price, category, description, available });
+          addItemForm.reset();
+          loadMenu();
+        } catch (error) {
+          console.error('Error adding item:', error);
+          alert('Failed to add item.');
+        }
       });
-      suggestionsBox.appendChild(div);
+
+      // Attach update & delete listeners
+      function attachMenuListeners() {
+        document.querySelectorAll('.update-btn').forEach(btn => {
+          btn.onclick = async () => {
+            const row = btn.closest('tr');
+            const id = row.dataset.id;
+            const updated = {
+              name: row.querySelector('.edit-name').textContent.trim(),
+              price: parseFloat(row.querySelector('.edit-price').textContent),
+              category: row.querySelector('.edit-category').value,
+              description: row.querySelector('.edit-description').textContent.trim(),
+              available: row.querySelector('.edit-available').checked
+            };
+            try {
+              await updateDoc(doc(db, 'menu', id), updated);
+              loadMenu();
+            } catch (error) {
+              console.error('Error updating item:', error);
+              alert('Failed to save changes.');
+            }
+          };
+        });
+
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+          btn.onclick = async () => {
+            const id = btn.closest('tr').dataset.id;
+            if (confirm('Delete this menu item?')) {
+              try {
+                await deleteDoc(doc(db, 'menu', id));
+                loadMenu();
+              } catch (error) {
+                console.error('Error deleting item:', error);
+                alert('Failed to delete item.');
+              }
+            }
+          };
+        });
+      }
+
+      // Initial load
+      loadMenu();
     });
-  });
-
-  // Hide suggestions on click elsewhere
-  document.addEventListener("click", (e) => {
-    if (e.target !== productInput) {
-      suggestionsBox.innerHTML = "";
-    }
-  });
-
-  // Update Price on Button Click
-  updateButton.addEventListener("click", () => {
-    const name = productInput.value.trim().toLowerCase();
-    const price = parseFloat(newPriceInput.value.replace(/[^0-9.]/g, ""));
-
-    if (!name || isNaN(price)) {
-      alert("Please enter a valid product name and price.");
-      return;
-    }
-
-    const match = products.find(p => p.name.toLowerCase() === name);
-    if (!match) {
-      alert("Product not found.");
-      return;
-    }
-
-    // Update DOM
-    const priceTag = match.element.querySelector(".price-tag, .item-price");
-    if (priceTag) {
-      priceTag.textContent = `$${price.toFixed(2)}`;
-      match.element.setAttribute("data-price", price.toFixed(2));
-      alert("Price updated successfully!");
-    } else {
-      alert("Unable to find price display element.");
-    }
-  });
-*/

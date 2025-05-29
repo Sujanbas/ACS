@@ -9,8 +9,8 @@
   <link rel="stylesheet" href="../css/dashboard.css" />
   <script src="https://kit.fontawesome.com/3b8f9e8c33.js" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-  <script src="../js/feed.js" defer></script>
-   <script src="../js/dashboard.js" defer></script>
+  <script type="module" src="../js/feed.js"></script>
+   <script type="module" src="../js/dashboard.js"></script>
 
  
 </head>
@@ -23,29 +23,57 @@
       <button data-section="feed-price"><i class="fas fa-tractor"></i> Feed Price</button>
       <button data-section="fuel-price"><i class="fas fa-gas-pump"></i> Fuel Price</button>
       <button data-section="deli-price"><i class="fas fa-hamburger"></i> Deli Price</button>
+      
     </div>
 
     <!-- Dashboard Content -->
     <div id="dashboard">
       <div class="dashboard-header">
+        <button id="logoutBtn"> <i class="fa-solid fa-power-off"></i>Logout</button>
         <h1><i class="fas fa-cogs"></i> Admin Dashboard</h1>
+        <h2>Hello, <span id="userEmail"></span><h2>
         <p>Manage store operations securely</p>
-      </div>
+      </div>      
 
       <!-- New Order Section -->
       <div class="dashboard-section active" id="new-order">
         <h2><i class="fas fa-utensils"></i> New Order</h2>
         <div class="form-group">
           <label>Food Order</label>
-          <!-- Insert table from order.html or dynamic content here -->
+          <h1>All Orders</h1>
+          <div id="ordersContainer">Loading orders...</div>
         </div>
-        <button>Confirm Order</button>
+       
       </div>
 
      
         <!-- Feed Price Section -->
           <div class="dashboard-section" id="feed-price">
-              <h2><i class="fas fa-tractor"></i> Change Feed Price</h2>
+                    <h2>Add New Feed Item</h2>
+                    <form id="addFeedForm">
+                      <label for="newCategory">Category:</label><br/>
+                        <select id="newCategory" name="newCategory" required>
+                          <option value="" disabled selected>Select a category</option>
+                          <option value="Poultry Feed">Poultry Feed</option>
+                          <option value="Cattle Feed">Cattle Feed</option>
+                          <option value="Minerals">Minerals</option>
+                          <option value="Pet Feed">Pet Feed</option>
+                        </select><br/><br/>
+                      <label for="newQuantity">Quantity:</label><br/>
+                      <input type="number" id="newQuantity" name="newQuantity" min="0" placeholder="50 Lb" required /><br/><br/>
+                      
+                      <label for="newProductName">Product Name:</label><br/>
+                      <input type="text" id="newProductName" name="newProductName" required /><br/><br/>
+                      
+                      <label for="newProductPrice">Price:</label><br/>
+                      <input type="text" id="newProductPrice" name="newProductPrice" placeholder="$0.00" required /><br/><br/>
+                      
+                      <button type="submit">Add Item</button>
+                    </form>
+                    <p id="addFeedMessage" style="display:none; margin-top: 10px;"></p>
+
+  
+            <h2><i class="fas fa-tractor"></i> Change Feed Price</h2>
               <div class="form-group" style="position: relative;">
                 <label for="productName">Feed Product Name</label>
                 <input type="text" id="productName" placeholder="e.g., Hen Scratch" autocomplete="off" />
@@ -57,6 +85,8 @@
                 <input type="text" id="newPrice" placeholder="$0.00" />
               </div>
               <button id="updatePriceBtn">Update Feed Price</button>
+              <button type="submit">Delete Product</button>
+
           
                 <h2>Feed Price Chart</h2>
                 <table id="priceTable">
@@ -127,21 +157,42 @@
 
       <!-- Deli Price Section -->
       <div class="dashboard-section" id="deli-price">
-        <h2><i class="fas fa-hamburger"></i> Change Deli Price</h2>
-              
-            <div class="form-group" style="position: relative;">
-              <label>Deli Item</label>
-              <input type="text" id="product-name" placeholder="e.g., Cheese sticks, pizza" autocomplete="off" />
-              <div id="suggestions" class="suggestions-box"></div>
-            </div>
+              <section id="menu-management">
+                <h2><i class="fas fa-hamburger"></i>Menu Items Management</h2>
+                <!-- Add Item Form -->
+                <form id="addItemForm" class="card">
+                  <h3>Add New Item</h3>
+                  <label>Name: <input type="text" id="newName" required></label>
+                  <label>Price: <input type="number" id="newPrice" min="0" step="0.01" required></label>
+                  <label>Category: 
+                      <select id="newCategory" required>
+                        <option value="">-- Select Category --</option>
+                        <option value="Burger">Burger</option>
+                        <option value="Pizza">Pizza</option>
+                        <option value="Snacks">Snacks</option>
+                        <option value="Weekend Items">Weekend Items</option>
+                      </select>
+                    </label>
+                  <label>Description: <input type="text" id="newDescription"></label>
+                  <label>Available: <input type="checkbox" id="newAvailable" checked></label>
+                  <button type="submit">Add Item</button>
+                </form>
 
-            <div class="form-group">
-              <label>New Price</label>
-              <input type="text" id="new-price" placeholder="$0.00" />
-            </div>
-
-            <button id="update-price-btn">Update Deli Price</button>
-
+                <!-- Menu Items Table -->
+                <table id="menuTable" class="table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Price</th>
+                      <th>Category</th>
+                      <th>Description</th>
+                      <th>Available</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </section>
       </div>
     </div>
   </div>

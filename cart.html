@@ -3,9 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Anderson Convenience Store</title>
+    <title>Anderson Convenience Store - Cart</title>
 
-    <meta name="description" content="Anderson Convenience Store offers gas, groceries, hardware, feed, and everyday essentials in Anderson, AL." />
+    <meta name="description" content="Review and confirm your order at Anderson Convenience Store." />
 
     <link rel="stylesheet" href="./css/index.css" />
     <link rel="stylesheet" href="./css/partials.css">
@@ -20,59 +20,98 @@
     <header class="header">
       <div id="navbar-placeholder" aria-label="Site Navigation"></div>
     </header>
-  <section class="items-container">
-  <div id="cart-items"></div>
-  <div id="cart-total" class="cart-total-price">Total: </div>
-  <button id="clear-cart">Clear Cart</button>
-  <button id="pay">Pay now</button>
-  </section> 
-  <footer class="footer">
-      <p>&copy; 2025 Andreson Convenience Store | <a href="#">Privacy Policy</a> | <a href="admin/login.html" class="login">Log In</a> </p>
-    </footer>
-  </body>
-</html>
 
-<script>
-  document.getElementById('clear-cart').addEventListener('click', () => {
-    localStorage.removeItem('cart');
-    location.reload();
-  });
+    <section class="items-container">
+      <div id="cart-items"></div>
+      <div id="cart-total" class="cart-total-price">Total: $0.00</div>
+      <button id="clear-cart" type="button">Clear Cart</button>
+      <button id="confirm" type="button">Confirm Order</button>
+    </section>
 
-    document.addEventListener('DOMContentLoaded', () => {
-      const cart = JSON.parse(localStorage.getItem('cart')) || [];
-      const cartContainer = document.getElementById('cart-items');
-      const totalElement = document.getElementById('cart-total');
-    
-      // Render each item in the cart
-      function renderCart() {
-        cartContainer.innerHTML = '';
-    
+    <!-- Footer Placeholder -->
+    <div id="footer-placeholder"></div>
+
+    <!-- Cart Logic -->
+    <script>
+      // Clear cart button
+      document.getElementById('clear-cart').addEventListener('click', () => {
+        localStorage.removeItem('cart');
+        location.reload();
+      });
+
+      // Render cart on page load
+      document.addEventListener('DOMContentLoaded', () => {
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const cartContainer = document.getElementById('cart-items');
+        const totalElement = document.getElementById('cart-total');
+
+        function renderCart() {
+          cartContainer.innerHTML = '';
+
+          if (cart.length === 0) {
+            cartContainer.innerHTML = '<p>Your cart is empty.</p>';
+            totalElement.textContent = 'Total: $0.00';
+            return;
+          }
+
+          let total = 0;
+
+          cart.forEach(item => {
+            const itemTotal = item.quantity * item.price;
+            total += itemTotal;
+
+            const div = document.createElement('div');
+            div.classList.add('cart-row');
+            div.innerHTML = `
+              <div class="cart-item-name">${item.name}</div>
+              <div class="cart-item-quantity">x${item.quantity}</div>
+              <div class="cart-item-price">$${itemTotal.toFixed(2)}</div>
+            `;
+            cartContainer.appendChild(div);
+          });
+
+          totalElement.textContent = `Total: $${total.toFixed(2)}`;
+        }
+
+        renderCart();
+      });
+    </script>
+
+    <!-- Firebase Submission -->
+    <script type="module">
+      import { db, collection, addDoc } from './js/firebase-config.js';
+
+      document.getElementById('confirm').addEventListener('click', async () => {
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+
         if (cart.length === 0) {
-          cartContainer.innerHTML = '<p>Your cart is empty.</p>';
-          totalElement.textContent = '$0.00';
+          alert('Your cart is empty.');
           return;
         }
-    
-        let total = 0;
-    
-        cart.forEach(item => {
-          const itemTotal = item.quantity * item.price;
-          total += itemTotal;
-    
-          const div = document.createElement('div');
-          div.classList.add('cart-row');
-          div.innerHTML = `
-            <div class="cart-item-name">${item.name}</div>
-            <div class="cart-item-quantity">x${item.quantity}</div>
-            <div class="cart-item-price">$${itemTotal.toFixed(2)}</div>
-          `;
-          cartContainer.appendChild(div);
-        });
-    
-        totalElement.textContent = `$${total.toFixed(2)}`;
-      }
-    
-      renderCart();
-    });
-</script>
-    
+
+        try {
+          for (const item of cart) {
+            await addDoc(collection(db, 'orders'), {
+              item: item.name,
+              quantity: item.quantity,
+              price: item.price,
+              toppings: item.toppings || [],
+              pizzaSize: item.pizzaSize || null,
+              request: item.request || '',
+              name: item.nameInput || '',
+              phone: item.phoneInput || '',
+              createdAt: new Date().toISOString()
+            });
+          }
+
+          alert('Order confirmed and submitted successfully!');
+          localStorage.removeItem('cart');
+          location.reload();
+        } catch (error) {
+          console.error('Error submitting order:', error);
+          alert('Something went wrong while submitting your order.');
+        }
+      });
+    </script>
+  </body>
+</html>
